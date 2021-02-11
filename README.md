@@ -1,2 +1,1 @@
-# snakegame
- 
+crappy snake game made with turtles
