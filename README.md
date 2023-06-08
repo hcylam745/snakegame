@@ -1,1 +1,1 @@
-crappy snake game made with turtles
+snake game made with turtles
