@@ -41,5 +41,22 @@ class tiles:
                 self.allTiles[i][j].shape("square")
         turtle.tracer(True)
 
+    def changeColour(self, colour, x, y):
+        if x >= len(self.allTiles) or y >= len(self.allTiles[x]) or x < 0 or y < 0:
+            return
+        if colour == "tiles":
+            if x % 2 == 0:
+                if y % 2 == 0:
+                    self.allTiles[x][y].color("lime")
+                else:
+                    self.allTiles[x][y].color("green")
+            else:
+                if y % 2 != 0:
+                    self.allTiles[x][y].color("lime")
+                else:
+                    self.allTiles[x][y].color("green")
+            return
+        self.allTiles[x][y].color(colour)
+
     def returnTiles(self):
         return self.allTiles

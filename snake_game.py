@@ -13,18 +13,22 @@ apple_count = 0
 
 def updateTime():
     global apple_count
-    if initSnake.xcor > width or initSnake.xcor < -width + 40 or initSnake.ycor > height or initSnake.ycor < -height + 40:
+    start = time.time()
+    if initSnake.xcor < 0 or initSnake.ycor < 0 or initSnake.xcor >= initTiles.amountWidth or initSnake.ycor >= initTiles.amountHeight:
         initMessage.draw("You Lost! ", apple_count)
         return
-    if initSnake.xcor == initApple.xcoord and initSnake.ycor == initApple.ycoord:
+    (x, y) = initTiles.returnTiles()[initSnake.xcor][initSnake.ycor].pos()
+    if x == initApple.xcoord and y == initApple.ycoord:
         apple_count+=1
+        initApple.appleTurtle.hideturtle()
+        initTiles.returnTiles()[initSnake.xcor][initSnake.ycor].showturtle()
         initSnake.add()
         initApple.spawnApple(initTiles, initSnake)
-    initSnake.move(initTiles)
-    # you need to add a condition for checking if the snake overlaps itself
-    # you dont need to check all overlaps, only if the most recent overlaps with anything.
-    for i in range(1,len(initSnake.snakeTurtle)):
-        if initSnake.xcor == initSnake.snakeTurtle[i].xcor() and initSnake.ycor == initSnake.snakeTurtle[i].ycor():
+    if initSnake.move(initTiles) == False:
+        initMessage.draw("You Lost! ", apple_count)
+        return
+    for i in range(1, len(initSnake.snakeCoords)):
+        if initSnake.xcor == initSnake.snakeCoords[i][0] and initSnake.ycor == initSnake.snakeCoords[i][1]:
             initMessage.draw("You Lost! ", apple_count)
             return
     turtle.ontimer(updateTime, update_time)
@@ -44,34 +48,42 @@ new = 1
 
 def left():
     global new
-    initSnake.rotate("left",180)
+    if initSnake.direction == "right":
+        return
     if new == 1:
         updateTime()
         new = 0
+    initSnake.rotate("left")
     
 
 def down():
     global new
-    initSnake.rotate("down",270)
+    if initSnake.direction == "up":
+        return
     if new == 1:
         updateTime()
         new = 0
+    initSnake.rotate("down")
     
 
 def right():
     global new
-    initSnake.rotate("right",0)
+    if initSnake.direction == "left":
+        return
     if new == 1:
         updateTime()
         new = 0
+    initSnake.rotate("right")
     
 
 def up():
     global new
-    initSnake.rotate("up",90)
+    if initSnake.direction == "down":
+        return
     if new == 1:
         updateTime()
         new = 0
+    initSnake.rotate("up")
     
 
 turtle.onkeypress(left,'a')

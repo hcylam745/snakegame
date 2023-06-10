@@ -19,21 +19,19 @@ class apple:
         self.xcoord = allTiles.returnTiles()[x][y].xcor()
         self.ycoord = allTiles.returnTiles()[x][y].ycor()
         self.appleTurtle.goto(allTiles.returnTiles()[x][y].position())
+        self.appleTurtle.showturtle()
+        allTiles.returnTiles()[x][y].hideturtle()
     
     # checks if apple generation overlaps with the snake, if it does then regenerate until it doesn't overlap anymore.
     def checkOverlap(self, x,y, allTiles, snake):
-        true = 0
-        # dont check memory, but rather the snake.
-        # this loop checks to see if the current pos is on the snake, if so, it rerolls the position, and calls the function again.
-        for i in range(len(snake.snakeTurtle)):
-            (snake_x, snake_y) = snake.snakeTurtle[i].pos()
-            if allTiles.returnTiles()[x][y].xcor() == snake_x and allTiles.returnTiles()[x][y].ycor() == snake_y:
+        true = 1
+        for i in range(len(snake.snakeCoords)):
+            if x == snake.snakeCoords[i][0] and y == snake.snakeCoords[i][1]:
                 true = 0
                 x = random.randint(1,allTiles.amountWidth - 1)
-                y = random.randint(1,allTiles.amountHeight - 1)
-            else:
-                true = 1
+                y = random.randint(1,allTiles.amountWidth - 1)
+                print("rerolling to " + str(x) + " and " + str(y))
         if true == 0:
-            self.checkOverlap(x,y, allTiles)
+            return self.checkOverlap(x,y, allTiles, snake)
         else:
             return x,y
