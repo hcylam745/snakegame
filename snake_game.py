@@ -10,6 +10,7 @@ from tiles import tiles
 update_time = 100
 width, height = 300,300
 apple_count = 0
+buffer = ["none", "none"]
 
 def updateTime():
     global apple_count
@@ -31,6 +32,10 @@ def updateTime():
         if initSnake.xcor == initSnake.snakeCoords[i][0] and initSnake.ycor == initSnake.snakeCoords[i][1]:
             initMessage.draw("You Lost! ", apple_count)
             return
+    if buffer[1] != "none":
+        initSnake.rotate(buffer[1])
+    buffer[0] = "none"
+    buffer[1] = "none"
     turtle.ontimer(updateTime, update_time)
 
 # creating objects, initialising the board and creating the first apple
@@ -47,43 +52,63 @@ new = 1
 #listen for player input
 
 def left():
-    global new
+    global new, buffer
     if initSnake.direction == "right":
         return
     if new == 1:
         updateTime()
         new = 0
-    initSnake.rotate("left")
+    if buffer[0] == "none":
+        buffer[0] = "left"
+        initSnake.rotate("left")
+    else:
+        if buffer[1] == "none":
+            buffer[1] = "left"
     
 
 def down():
-    global new
+    global new, buffer
     if initSnake.direction == "up":
         return
     if new == 1:
         updateTime()
         new = 0
-    initSnake.rotate("down")
+    if buffer[0] == "none":
+        buffer[0] = "down"
+        initSnake.rotate("down")
+    else:
+        if buffer[1] == "none":
+            buffer[1] = "down"
     
 
 def right():
-    global new
+    global new, buffer
     if initSnake.direction == "left":
         return
     if new == 1:
         updateTime()
         new = 0
-    initSnake.rotate("right")
+    if buffer[0] == "none":
+        buffer[0] = "right"
+        initSnake.rotate("right")
+    else:
+        if buffer[1] == "none":
+            buffer[1] = "right"
     
 
 def up():
-    global new
+    global new, buffer
     if initSnake.direction == "down":
         return
     if new == 1:
         updateTime()
         new = 0
-    initSnake.rotate("up")
+    if buffer[0] == "none":
+        buffer[0] = "up"
+        initSnake.rotate("up")
+    else:
+        if buffer[1] == "none":
+            buffer[1] = "up"
     
 
 turtle.onkeypress(left,'a')
