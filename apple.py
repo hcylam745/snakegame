@@ -30,7 +30,6 @@ class apple:
                 true = 0
                 x = random.randint(1,allTiles.amountWidth - 1)
                 y = random.randint(1,allTiles.amountWidth - 1)
-                print("rerolling to " + str(x) + " and " + str(y))
         if true == 0:
             return self.checkOverlap(x,y, allTiles, snake)
         else:

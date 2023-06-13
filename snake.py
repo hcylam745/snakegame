@@ -14,8 +14,9 @@ class snake:
         self.xcor = x
         self.ycor = y
         self.snakeCoords = [[x,y]]
+        self.prev = [x,y]
 
-        allTiles.changeColour("blue",x,y)
+        allTiles.changeColour("lightblue",x,y)
     
     def move(self, allTiles):
         if self.direction == "left":
@@ -32,25 +33,20 @@ class snake:
 
         #update snake's position after the current movement
 
-        xpos = self.snakeCoords[0][0]
-        ypos = self.snakeCoords[0][1]
+        allTiles.changeColour("lightblue", self.xcor, self.ycor)
 
-        allTiles.changeColour("blue", self.xcor, self.ycor)
-        self.snakeCoords[0][0] = self.xcor
-        self.snakeCoords[0][1] = self.ycor
+        if len(self.snakeCoords) >= 2:
+            allTiles.changeColour("blue",self.snakeCoords[0][0], self.snakeCoords[0][1])
 
-        for i in range(len(self.snakeCoords)-1):
-            curr_xpos = xpos
-            curr_ypos = ypos
-            
-            xpos = self.snakeCoords[i+1][0]
-            ypos = self.snakeCoords[i+1][1]
+        self.snakeCoords.insert(0,[self.xcor,self.ycor])
 
-            self.snakeCoords[i+1] = [curr_xpos, curr_ypos]
-        
         # the last position is discarded, and is no longer in the snake, therefore, update the board.
 
-        allTiles.changeColour("tiles",xpos, ypos)
+        largest = len(self.snakeCoords)-1
+        allTiles.changeColour("tiles",self.snakeCoords[largest][0], self.snakeCoords[largest][1])
+
+        self.prev = self.snakeCoords[largest]
+        self.snakeCoords.pop(largest)
 
         return True
 
@@ -58,7 +54,8 @@ class snake:
     def rotate(self, direction):
         self.direction = direction
 
-    def add(self):
-        x = self.snakeCoords[len(self.snakeCoords)-1][0]
-        y = self.snakeCoords[len(self.snakeCoords)-1][1]
-        self.snakeCoords.append([x,y])
+    def add(self,xcor, ycor, allTiles):
+        self.snakeCoords.append(self.prev)
+        x = int((allTiles.screenHeight - xcor) / (20 * allTiles.length))
+        y = int((allTiles.screenWidth - ycor) / (20 * allTiles.length))
+        allTiles.returnTiles()[y][x].showturtle()
