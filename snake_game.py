@@ -12,7 +12,10 @@ update_time = 100
 width, height = 300,300
 apple_count = 0
 buffer = ["none", "none"]
-run_algo = True
+run_algo_greedy = False
+run_algo_bfs = True
+run_bfs_repeat = False
+list_of_directions = []
 
 def left():
     global new, buffer
@@ -79,17 +82,50 @@ def runGreedy():
 
     if direction != "none":
         if direction == "up":
-            up()
+            list_of_directions.append("up")
         else:
             if direction == "left":
-                left()
+                list_of_directions.append("left")
             else: 
                 if direction == "right":
-                    right()
+                    list_of_directions.append("right")
                 else:
-                    down()
+                    list_of_directions.append("down")
+
+def runGreedyBFS():
+    global run_bfs_repeat
+    alg = algorithm(update_time, initTiles)
+    direction, failed_to_get_apple = alg.shortestpathbfs(initTiles, initApple)
+
+    if failed_to_get_apple:
+        run_bfs_repeat = True
+
+    dir_list = direction[1].split(",")
+    del dir_list[0]
+
+    for i in range(len(dir_list)):
+        list_of_directions.append(dir_list[i])
 
 def updateTime():
+    global run_bfs_repeat
+    if run_algo_greedy == True:
+        runGreedy()
+
+    if len(list_of_directions) > 0:
+        curr_dir = list_of_directions[0]
+        del list_of_directions[0]
+        if curr_dir == "up":
+            up()
+        if curr_dir == "down":
+            down()
+        if curr_dir == "right":
+            right()
+        if curr_dir == "left":
+            left()
+        if run_bfs_repeat == True and len(list_of_directions) == 0:
+            run_bfs_repeat = False
+            runGreedyBFS()
+
     global apple_count
     if initSnake.xcor < 0 or initSnake.ycor < 0 or initSnake.xcor >= initTiles.amountWidth or initSnake.ycor >= initTiles.amountHeight:
         initMessage.draw("You Lost! ", apple_count)
@@ -104,6 +140,8 @@ def updateTime():
         initTiles.returnTiles()[initSnake.xcor][initSnake.ycor].showturtle()
         initSnake.add(initApple.xcoord, initApple.ycoord, initTiles)
         initApple.spawnApple(initTiles, initSnake)
+        if run_algo_bfs == True:
+            runGreedyBFS()
         
     for i in range(1, len(initSnake.snakeCoords)):
         if initSnake.xcor == initSnake.snakeCoords[i][0] and initSnake.ycor == initSnake.snakeCoords[i][1]:
@@ -113,9 +151,6 @@ def updateTime():
         initSnake.rotate(buffer[1])
     buffer[0] = "none"
     buffer[1] = "none"
-
-    if run_algo == True:
-        runGreedy()
 
     turtle.ontimer(updateTime, update_time)
 
@@ -130,8 +165,14 @@ initApple.spawnApple(initTiles, initSnake)
 initMessage = messages()
 new = 1
 
-if run_algo == True:
-    runGreedy()
+if run_algo_greedy == True and new == 1:
+    new = 0
+    updateTime()
+else:
+    if run_algo_bfs == True and new == 1:
+        new = 0
+        runGreedyBFS()
+        updateTime()
 
 #listen for player input
     
