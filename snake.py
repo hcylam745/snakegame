@@ -2,21 +2,6 @@ import turtle
 import random
 
 class snake:
-    def __init__(self, allTiles):
-        x = random.randint(1,allTiles.amountWidth - 1) 
-        y = random.randint(1,allTiles.amountHeight - 1) 
-
-        # don't need to care whether the snake is spawning on the apple, since the
-        # apple spawns after the snake, and the apple spawning checks for
-        # overlap with the snake.
-
-        self.direction = "none"
-        self.xcor = x
-        self.ycor = y
-        self.snakeCoords = [[x,y]]
-        self.prev = [x,y]
-
-        allTiles.changeColour("lightblue",x,y)
     
     def move(self, allTiles):
         if self.direction == "left":
@@ -59,3 +44,16 @@ class snake:
         x = int((allTiles.screenHeight - xcor) / (20 * allTiles.length))
         y = int((allTiles.screenWidth - ycor) / (20 * allTiles.length))
         allTiles.returnTiles()[y][x].showturtle()
+    
+    def reset(self, allTiles):
+        x = random.randint(1, allTiles.amountWidth - 1)
+        y = random.randint(1, allTiles.amountHeight - 1)
+        
+        self.direction = "none"
+        self.xcor = x
+        self.ycor = y
+        self.snakeCoords = [[x,y]]
+        self.prev = [x,y]
+
+        allTiles.changeColour("lightblue",x,y)
+        

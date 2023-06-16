@@ -16,6 +16,7 @@ run_algo_greedy = False
 run_algo_bfs = True
 run_bfs_repeat = False
 list_of_directions = []
+lost = False
 
 def left():
     global new, buffer
@@ -101,15 +102,17 @@ def runGreedyBFS():
         run_bfs_repeat = True
 
     dir_list = direction[1].split(",")
-    del dir_list[0]
 
-    for i in range(len(dir_list)):
-        list_of_directions.append(dir_list[i])
+    if len(dir_list) >= 2:
+        list_of_directions.append(dir_list[1]) 
 
 def updateTime():
     global run_bfs_repeat
+    global lost
     if run_algo_greedy == True:
         runGreedy()
+    if run_algo_bfs == True:
+        runGreedyBFS()
 
     if len(list_of_directions) > 0:
         curr_dir = list_of_directions[0]
@@ -122,15 +125,14 @@ def updateTime():
             right()
         if curr_dir == "left":
             left()
-        if run_bfs_repeat == True and len(list_of_directions) == 0:
-            run_bfs_repeat = False
-            runGreedyBFS()
 
     global apple_count
     if initSnake.xcor < 0 or initSnake.ycor < 0 or initSnake.xcor >= initTiles.amountWidth or initSnake.ycor >= initTiles.amountHeight:
+        lost = True
         initMessage.draw("You Lost! ", apple_count)
         return
     if initSnake.move(initTiles) == False:
+        lost = True
         initMessage.draw("You Lost! ", apple_count)
         return
     (x, y) = initTiles.returnTiles()[initSnake.xcor][initSnake.ycor].pos()
@@ -140,26 +142,27 @@ def updateTime():
         initTiles.returnTiles()[initSnake.xcor][initSnake.ycor].showturtle()
         initSnake.add(initApple.xcoord, initApple.ycoord, initTiles)
         initApple.spawnApple(initTiles, initSnake)
-        if run_algo_bfs == True:
-            runGreedyBFS()
         
     for i in range(1, len(initSnake.snakeCoords)):
         if initSnake.xcor == initSnake.snakeCoords[i][0] and initSnake.ycor == initSnake.snakeCoords[i][1]:
+            lost = True
             initMessage.draw("You Lost! ", apple_count)
             return
     if buffer[1] != "none":
         initSnake.rotate(buffer[1])
     buffer[0] = "none"
     buffer[1] = "none"
-
-    turtle.ontimer(updateTime, update_time)
+    
+    if lost == False:
+        turtle.ontimer(updateTime, update_time)
 
 # creating objects, initialising the board and creating the first apple
 screen = turtle.Screen()
 turtle.addshape("apple.gif")
 initTiles = tiles(2,width,height)
 initTiles.drawBoard()
-initSnake = snake(initTiles)
+initSnake = snake()
+initSnake.reset(initTiles)
 initApple = apple()
 initApple.spawnApple(initTiles, initSnake)
 initMessage = messages()
@@ -171,8 +174,53 @@ if run_algo_greedy == True and new == 1:
 else:
     if run_algo_bfs == True and new == 1:
         new = 0
-        runGreedyBFS()
         updateTime()
+
+def reset(x, y):
+    global lost
+    if lost == True:
+        global buffer
+        global run_bfs_repeat
+        global new
+        global apple_count
+        global list_of_directions
+        (apple_y, apple_x) = initApple.appleTurtle.position()
+        apple_x = int((initTiles.screenHeight - apple_x) / (20*initTiles.length))
+        apple_y = int((initTiles.screenWidth - apple_y) / (20*initTiles.length))
+        initTiles.returnTiles()[apple_x][apple_y].showturtle()
+        initTiles.changeColour("tiles", apple_x, apple_y)
+        initTiles.reset()
+        initSnake.reset(initTiles)
+        initApple.spawnApple(initTiles, initSnake)
+        apple_count = 0
+        new = 1
+        buffer = ["none", "none"]
+        list_of_directions = []
+        initSnake.direction = "none"
+        run_bfs_repeat = False
+        lost = False
+
+        time.sleep(2)
+
+        if run_algo_greedy == True and new == 1:
+            new = 0
+            updateTime()
+        else:
+            if run_algo_bfs == True and new == 1:
+                new = 0
+                updateTime()
+
+#create a reset button
+button = turtle.Turtle()
+button.hideturtle()
+button.shape('square')
+button.fillcolor('grey')
+button.penup()
+button.shapesize(3)
+button.goto(0,-350)
+button.showturtle()
+button.write("R", align='center', font=('Arial', 16, 'bold'))
+button.onclick(reset)
 
 #listen for player input
     

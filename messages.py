@@ -13,3 +13,4 @@ class messages:
         self.messageTurtle[0].write(message,align="center",font=("Arial",24,"normal"))
         self.messageTurtle[0].goto(self.messageTurtle[0].xcor(),self.messageTurtle[0].ycor()-100)
         self.messageTurtle[0].write(apple_count,align="center",font=("Arial",24,"normal"))
+        self.messageTurtle[0].goto(self.messageTurtle[0].xcor(), self.messageTurtle[0].ycor()+100)

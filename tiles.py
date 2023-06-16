@@ -60,3 +60,17 @@ class tiles:
 
     def returnTiles(self):
         return self.allTiles
+
+    def reset(self):
+        for i in range(self.amountHeight):
+            for j in range(self.amountWidth):
+                if i % 2 == 0:
+                    if j % 2 == 0:
+                        self.allTiles[i][j].color("lime")
+                    else:
+                        self.allTiles[i][j].color("green")
+                else:
+                    if j % 2 != 0:
+                        self.allTiles[i][j].color("lime")
+                    else:
+                        self.allTiles[i][j].color("green")
