@@ -1,5 +1,6 @@
 import turtle
 import random
+import time
 
 class snake:
     
@@ -16,8 +17,11 @@ class snake:
         if self.xcor < 0 or self.ycor < 0 or self.xcor >= allTiles.amountWidth or self.ycor >= allTiles.amountHeight:
             return False
 
-        #update snake's position after the current movement
+        # the last position is discarded, and is no longer in the snake, therefore, update the board.
+        largest = len(self.snakeCoords)-1
+        allTiles.changeColour("tiles",self.snakeCoords[largest][0], self.snakeCoords[largest][1])
 
+        # update snake's position after the current movement
         allTiles.changeColour("lightblue", self.xcor, self.ycor)
 
         if len(self.snakeCoords) >= 2:
@@ -25,13 +29,8 @@ class snake:
 
         self.snakeCoords.insert(0,[self.xcor,self.ycor])
 
-        # the last position is discarded, and is no longer in the snake, therefore, update the board.
-
-        largest = len(self.snakeCoords)-1
-        allTiles.changeColour("tiles",self.snakeCoords[largest][0], self.snakeCoords[largest][1])
-
-        self.prev = self.snakeCoords[largest]
-        self.snakeCoords.pop(largest)
+        self.prev = self.snakeCoords[largest+1]
+        self.snakeCoords.pop(largest+1)
 
         return True
 
