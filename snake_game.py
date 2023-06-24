@@ -1,6 +1,5 @@
-import turtle
 import time
-import random
+import pygame
 
 from messages import messages
 from snake import snake
@@ -8,227 +7,217 @@ from apple import apple
 from tiles import tiles
 from algorithm import algorithm
 
-update_time = 100
-width, height = 300,300
-apple_count = 0
-buffer = ["none", "none"]
-run_algo_greedy = False
-run_algo_bfs = True
-run_bfs_repeat = False
-list_of_directions = []
-lost = False
+class snakegame:
+    def __init__(self, ml):
+        self.update_time = 150
+        self.width = 550
+        self.height = 550
+        self.window_width = 650
+        self.window_height = 650
+        self.apple_count = 0
+        self.buffer = ["none", "none"]
+        self.run_algo_greedy = False
+        self.run_algo_bfs = True
+        self.run_bfs_repeat = False
+        self.run_player = False
+        self.run_ml = False
+        self.list_of_directions = []
+        self.lost = False
 
-def left():
-    global new, buffer
-    if initSnake.direction == "right":
-        return
-    if buffer[0] == "none":
-        buffer[0] = "left"
-        initSnake.rotate("left")
-    else:
-        if buffer[1] == "none":
-            buffer[1] = "left"
-    if new == 1:
-        new = 0
-        updateTime()
-    
+        pygame.init()
+        # double the size of with turtles.
+        self.screen = pygame.display.set_mode((self.window_width, self.window_height))
+        self.screen.fill((255,255,255))
+        self.initTiles = tiles(36, self.width, self.height)
+        self.initTiles.drawBoard(self.screen)
+        self.initSnake = snake()
+        self.initSnake.reset(self.initTiles, self.screen)
+        self.initApple = apple()
+        self.initApple.spawnApple(self.initTiles, self.initSnake,self.screen)
+        self.initMessage = messages()
 
-def down():
-    global new, buffer
-    if initSnake.direction == "up":
-        return
-    if buffer[0] == "none":
-        buffer[0] = "down"
-        initSnake.rotate("down")
-    else:
-        if buffer[1] == "none":
-            buffer[1] = "down"
-    if new == 1:
-        new = 0
-        updateTime()
-    
+        self.new = 1
 
-def right():
-    global new, buffer
-    if initSnake.direction == "left":
-        return
-    if buffer[0] == "none":
-        buffer[0] = "right"
-        initSnake.rotate("right")
-    else:
-        if buffer[1] == "none":
-            buffer[1] = "right"
-    if new == 1:
-        new = 0
-        updateTime()
-    
+        if ml == True:
+            self.run_ml = True
+            self.run_player = False
+            self.run_algo_bfs = False
+            self.run_algo_greedy = False
+            self.new = 0
 
-def up():
-    global new, buffer
-    if initSnake.direction == "down":
-        return
-    if buffer[0] == "none":
-        buffer[0] = "up"
-        initSnake.rotate("up")
-    else:
-        if buffer[1] == "none":
-            buffer[1] = "up"
-    if new == 1:
-        new = 0
-        updateTime()
-
-def runGreedy():
-    alg = algorithm(update_time, initTiles)
-    direction = alg.shortestpath(initTiles, initApple, initSnake)
-
-    if direction != "none":
-        if direction == "up":
-            list_of_directions.append("up")
-        else:
-            if direction == "left":
-                list_of_directions.append("left")
-            else: 
-                if direction == "right":
-                    list_of_directions.append("right")
-                else:
-                    list_of_directions.append("down")
-
-def runGreedyBFS():
-    global run_bfs_repeat
-    alg = algorithm(update_time, initTiles)
-    direction, failed_to_get_apple = alg.shortestpathbfs(initTiles, initApple)
-
-    if failed_to_get_apple:
-        run_bfs_repeat = True
-
-    dir_list = direction[1].split(",")
-
-    if len(dir_list) >= 2:
-        list_of_directions.append(dir_list[1]) 
-
-def updateTime():
-    global run_bfs_repeat
-    global lost
-    if run_algo_greedy == True:
-        runGreedy()
-    if run_algo_bfs == True:
-        runGreedyBFS()
-
-    if len(list_of_directions) > 0:
-        curr_dir = list_of_directions[0]
-        del list_of_directions[0]
-        if curr_dir == "up":
-            up()
-        if curr_dir == "down":
-            down()
-        if curr_dir == "right":
-            right()
-        if curr_dir == "left":
-            left()
-
-    global apple_count
-    if initSnake.xcor < 0 or initSnake.ycor < 0 or initSnake.xcor >= initTiles.amountWidth or initSnake.ycor >= initTiles.amountHeight:
-        lost = True
-        initMessage.draw("You Lost! ", apple_count)
-        return
-    if initSnake.move(initTiles) == False:
-        lost = True
-        initMessage.draw("You Lost! ", apple_count)
-        return
-    (x, y) = initTiles.returnTiles()[initSnake.xcor][initSnake.ycor].pos()
-    if x == initApple.xcoord and y == initApple.ycoord:
-        apple_count+=1
-        initApple.appleTurtle.hideturtle()
-        initTiles.returnTiles()[initSnake.xcor][initSnake.ycor].showturtle()
-        initSnake.add(initApple.xcoord, initApple.ycoord, initTiles)
-        initApple.spawnApple(initTiles, initSnake)
+    def start(self):
+        while game.lost == False and game.run_ml == False:
+            if self.run_player == True:
+                events = pygame.event.get()
+                for event in events:
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_LEFT:
+                            self.left()
+                        elif event.key == pygame.K_RIGHT:
+                            self.right()
+                        elif event.key == pygame.K_UP:
+                            self.up()
+                        elif event.key == pygame.K_DOWN:
+                            self.down()
+            self.updateTime()
+            pygame.time.delay(self.update_time)
         
-    for i in range(1, len(initSnake.snakeCoords)):
-        if initSnake.xcor == initSnake.snakeCoords[i][0] and initSnake.ycor == initSnake.snakeCoords[i][1]:
-            lost = True
-            initMessage.draw("You Lost! ", apple_count)
+        while game.lost == True:
+            pygame.draw.rect(self.screen, (170, 170, 170), [self.window_width//2-15, self.height+50, 30, 30])
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse = pygame.mouse.get_pos()
+                    if self.window_width//2-15 <= mouse[0] <= self.window_width//2+15 and self.height+50 <= mouse[1] <= self.height + 80:
+                        self.reset()
+            pygame.display.update()
+
+    def left(self):
+        if self.initSnake.direction == "right":
             return
-    if buffer[1] != "none":
-        initSnake.rotate(buffer[1])
-    buffer[0] = "none"
-    buffer[1] = "none"
+        if self.buffer[0] == "none":
+            self.buffer[0] = "left"
+            self.initSnake.rotate("left")
+        elif self.buffer[1] == "none":
+            self.buffer[1] = "left"
+        if self.new == 1:
+            self.new = 0
+            self.updateTime()
     
-    if lost == False:
-        turtle.ontimer(updateTime, update_time)
-
-# creating objects, initialising the board and creating the first apple
-screen = turtle.Screen()
-turtle.addshape("apple.gif")
-initTiles = tiles(2,width,height)
-initTiles.drawBoard()
-initSnake = snake()
-initSnake.reset(initTiles)
-initApple = apple()
-initApple.spawnApple(initTiles, initSnake)
-initMessage = messages()
-new = 1
-
-if run_algo_greedy == True and new == 1:
-    new = 0
-    updateTime()
-else:
-    if run_algo_bfs == True and new == 1:
-        new = 0
-        updateTime()
-
-def reset(x, y):
-    global lost
-    if lost == True:
-        global buffer
-        global run_bfs_repeat
-        global new
-        global apple_count
-        global list_of_directions
-        (apple_y, apple_x) = initApple.appleTurtle.position()
-        apple_x = int((initTiles.screenHeight - apple_x) / (20*initTiles.length))
-        apple_y = int((initTiles.screenWidth - apple_y) / (20*initTiles.length))
-        initTiles.returnTiles()[apple_x][apple_y].showturtle()
-        initTiles.changeColour("tiles", apple_x, apple_y)
-        initTiles.reset()
-        initSnake.reset(initTiles)
-        initApple.spawnApple(initTiles, initSnake)
-        apple_count = 0
-        new = 1
-        buffer = ["none", "none"]
-        list_of_directions = []
-        initSnake.direction = "none"
-        run_bfs_repeat = False
-        lost = False
-
-        time.sleep(2)
-
-        if run_algo_greedy == True and new == 1:
-            new = 0
-            updateTime()
-        else:
-            if run_algo_bfs == True and new == 1:
-                new = 0
-                updateTime()
-
-#create a reset button
-button = turtle.Turtle()
-button.hideturtle()
-button.shape('square')
-button.fillcolor('grey')
-button.penup()
-button.shapesize(3)
-button.goto(0,-350)
-button.showturtle()
-button.write("R", align='center', font=('Arial', 16, 'bold'))
-button.onclick(reset)
-
-#listen for player input
+    def down(self):
+        if self.initSnake.direction == "up":
+            return
+        if self.buffer[0] == "none":
+            self.buffer[0] = "down"
+            self.initSnake.rotate("down")
+        elif self.buffer[1] == "none":
+            self.buffer[1] = "down"
+        if self.new == 1:
+            self.new = 0
+            self.updateTime()
     
+    def right(self):
+        if self.initSnake.direction == "left":
+            return
+        if self.buffer[0] == "none":
+            self.buffer[0] = "return"
+            self.initSnake.rotate("right")
+        elif self.buffer[1] == "none":
+            self.buffer[1] = "right"
+        if self.new == 1:
+            self.new = 0
+            self.updateTime()
+    
+    def up(self):
+        if self.initSnake.direction == "down":
+            return
+        if self.buffer[0] == "none":
+            self.buffer[0] = "up"
+            self.initSnake.rotate("up")
+        elif self.buffer[1] == "none":
+            self.buffer[1] = "up"
+        if self.new == 1:
+            self.new = 0
+            self.updateTime()
+    
+    def runGreedy(self):
+        alg = algorithm(self.update_time, self.initTiles)
+        direction = alg.shortestpath(self.initTiles, self.initApple, self.initSnake)
 
-turtle.onkeypress(left,'a')
-turtle.onkeypress(down,'s')
-turtle.onkeypress(right,'d')
-turtle.onkeypress(up,'w')
+        if direction != "none":
+            if direction == "up":
+                self.list_of_directions.append("up")
+            elif direction == "left":
+                self.list_of_directions.append("left")
+            elif direction == "right":
+                self.list_of_directions.append("right")
+            else:
+                self.list_of_directions.append("down")
+    
+    def runGreedyBFS(self):
+        alg = algorithm(self.update_time, self.initTiles)
+        direction, failed_to_get_apple = alg.shortestpathbfs(self.initTiles, self.initApple)
 
-turtle.listen()
-turtle.done()
+        if failed_to_get_apple:
+            self.run_bfs_repeat = True
+
+        dir_list = direction[1].split(",")
+
+        if len(dir_list) >= 2:
+            self.list_of_directions.append(dir_list[1])
+
+    def updateTime(self):
+        if self.run_algo_greedy == True:
+            self.runGreedy()
+        if self.run_algo_bfs == True:
+            self.runGreedyBFS()
+        
+        if len(self.list_of_directions) > 0:
+            curr_dir = self.list_of_directions[0]
+            del self.list_of_directions[0]
+            if curr_dir == "up":
+                self.up()
+            if curr_dir == "down":
+                self.down()
+            if curr_dir == "right":
+                self.right()
+            if curr_dir == "left":
+                self.left()
+
+        if self.initSnake.xcor < 0 or self.initSnake.ycor < 0 or self.initSnake.xcor >= self.initTiles.amountWidth or self.initSnake.ycor >= self.initTiles.amountHeight:
+            self.lost = True
+            self.initMessage.draw("You Lost! ", self.apple_count, self.screen, self.width, self.height)
+            return
+
+        if self.initSnake.direction != "none" and self.initSnake.move(self.initTiles, self.screen) == False:
+            self.lost = True
+            self.initMessage.draw("You Lost! ", self.apple_count, self.screen, self.width, self.height)
+            return
+
+        if self.initSnake.xcor == self.initApple.xcoord and self.initSnake.ycor == self.initApple.ycoord:
+            self.apple_count += 1
+            self.initSnake.add(self.initApple.xcoord, self.initApple.ycoord, self.initTiles)
+            self.initApple.spawnApple(self.initTiles, self.initSnake, self.screen)
+        
+        for i in range(1, len(self.initSnake.snakeCoords)):
+            if self.initSnake.xcor == self.initSnake.snakeCoords[i][0] and self.initSnake.ycor == self.initSnake.snakeCoords[i][1]:
+                self.lost = True
+                self.initMessage.draw("You Lost! ", self.apple_count, self.screen, self.width, self.height)
+                return
+        
+        if self.buffer[1] != "none":
+            self.initSnake.rotate(self.buffer[1])
+        self.buffer[0] = "none"
+        self.buffer[1] = "none"
+
+        pygame.display.update()
+    
+    def reset(self):
+        if self.lost == True:
+            apple_x = self.initApple.xcoord
+            apple_y = self.initApple.ycoord
+
+            self.screen.fill((255,255,255))
+            self.initTiles.changeColour("tiles", apple_x, apple_y, self.screen)
+            self.initTiles.reset(self.screen)
+            self.initSnake.reset(self.initTiles, self.screen)
+            self.initApple.spawnApple(self.initTiles, self.initSnake, self.screen)
+            self.apple_count = 0
+            self.new = 1
+            self.buffer = ["none", "none"]
+            self.list_of_directions = []
+            self.initSnake.direction = "none"
+            self.run_bfs_repeat = False
+            self.lost = False
+
+            pygame.display.update()
+
+            time.sleep(2)
+
+            self.start()
+
+
+game = snakegame(False)
+game.start()

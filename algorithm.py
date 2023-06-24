@@ -1,4 +1,3 @@
-import time
 
 class algorithm:
     def __init__(self, update_time, allTiles):
@@ -11,9 +10,8 @@ class algorithm:
     # rather than choosing a direction that leads the snake to the apple.
     # returns an array of the movements that the snake should make to go to the apple
     def shortestpathbfs(self, allTiles, initApple):
-        (apple_y, apple_x) = initApple.appleTurtle.position()
-        apple_x = (self.screenHeight - apple_x) / (20*self.length)
-        apple_y = (self.screenWidth - apple_y) / (20*self.length)
+        apple_x = initApple.xcoord
+        apple_y = initApple.ycoord
         # apple_x and apple_y store the coordinates of the apple.
 
         tiles = allTiles.returnTiles()
@@ -25,10 +23,10 @@ class algorithm:
 
         for i in range(len(tiles)):
             for j in range(len(tiles[i])):
-                if tiles[i][j].fillcolor() == "blue":
+                if tiles[i][j]== "blue":
                     snake.append([i,j])
                 else:
-                    if tiles[i][j].fillcolor() == "lightblue":
+                    if tiles[i][j] == "lightblue":
                         snake.insert(0, [i,j])
                         visited[str(i) + "," + str(j)] = [0, ""]
                         coords.append(i)
@@ -53,7 +51,7 @@ class algorithm:
             curr_pos[1] = int(curr_pos[1])
             del edges_queue[0]
 
-            curr_key = [str(curr_pos[0] - 1) + "," + str(curr_pos[1]), str(curr_pos[0] + 1) + "," + str(curr_pos[1]), str(curr_pos[0]) + "," + str(curr_pos[1] - 1), str(curr_pos[0]) + "," + str(curr_pos[1] + 1)]
+            curr_key = [str(curr_pos[0] + 1) + "," + str(curr_pos[1]), str(curr_pos[0] - 1) + "," + str(curr_pos[1]), str(curr_pos[0]) + "," + str(curr_pos[1] - 1), str(curr_pos[0]) + "," + str(curr_pos[1] + 1)]
             for i in range(len(curr_key)):
                 if curr_key[i] in visited and visited[curr_key[i]][0] == float('inf'):
                     edges_queue.append(curr_key[i])
@@ -90,9 +88,8 @@ class algorithm:
     # target. Improvement could be having the system run a simulation, probably using BFS
     # such that it doesnt run itself into a corner
     def shortestpath(self, allTiles, initApple, initSnake):
-        (apple_y, apple_x) = initApple.appleTurtle.position()
-        apple_x = (self.screenHeight - apple_x)/(20*self.length)
-        apple_y = (self.screenWidth - apple_y)/(20*self.length)
+        apple_x = initApple.xcoord
+        apple_y = initApple.ycoord
         # apple_x and apple_y store the coordinates of the apple.
         
         tiles = allTiles.returnTiles()
@@ -102,10 +99,10 @@ class algorithm:
 
         for i in range(len(tiles)):
             for j in range(len(tiles[i])):
-                if tiles[i][j].fillcolor() == "lightblue":
+                if tiles[i][j] == "lightblue":
                     snake.insert(0,[i,j])
                 else:
-                    if tiles[i][j].fillcolor() == "blue":
+                    if tiles[i][j] == "blue":
                         snake.append([i,j])
 
         # snake now stores the positions of each tile that the snake is on. 
@@ -113,14 +110,14 @@ class algorithm:
         dist = abs(apple_x - snake[0][0]) + abs(apple_y - snake[0][1])
 
         #up_dist, right_dist, ...
-        u_dist = abs(apple_x - (snake[0][0]-1)) + abs(apple_y - snake[0][1])
-        if u_dist < dist and direction != "down" and ([snake[0][0] - 1,snake[0][1]] not in snake):
+        u_dist = abs(apple_x - (snake[0][0]+1)) + abs(apple_y - snake[0][1])
+        if u_dist < dist and direction != "down" and ([snake[0][0] + 1,snake[0][1]] not in snake):
             return "up"
         r_dist = abs(apple_x - snake[0][0]) + abs(apple_y - (snake[0][1]-1))
         if r_dist < dist and direction != "left" and ([snake[0][0],snake[0][1] - 1] not in snake):
             return "right"
-        d_dist = abs(apple_x - (snake[0][0]+1)) + abs(apple_y - snake[0][1])
-        if d_dist < dist and direction != "up" and ([snake[0][0] + 1,snake[0][1]] not in snake):
+        d_dist = abs(apple_x - (snake[0][0]-1)) + abs(apple_y - snake[0][1])
+        if d_dist < dist and direction != "up" and ([snake[0][0] - 1,snake[0][1]] not in snake):
             return "down"
         l_dist = abs(apple_x - snake[0][0]) + abs(apple_y - (snake[0][1]+1))
         if l_dist < dist and direction != "right" and ([snake[0][0],snake[0][1] + 1] not in snake):
@@ -132,7 +129,7 @@ class algorithm:
         if ((snake[0][0] == int(apple_x) and (direction == "right" or direction == "left")) 
         or (snake[0][1] == int(apple_y) and (direction == "up" or direction == "down"))):
             if direction == "right" or direction == "left":
-                if snake[0][1] == 0 or [snake[0][0]-1, snake[0][1]] in snake:
+                if snake[0][1] == 0 or [snake[0][0]+1, snake[0][1]] in snake:
                     return "down"
                 else:
                     return "up"
@@ -152,8 +149,8 @@ class algorithm:
                     return "left"
             
             if (direction == "right" and [snake[0][0], snake[0][1] - 1] in snake) or (direction == "left" and [snake[0][0], snake[0][1] + 1] in snake):
-                if [snake[0][0]-1, snake[0][1]] in snake:
-                    if[snake[0][0]+1, snake[0][1]] not in snake:
+                if [snake[0][0]+1, snake[0][1]] in snake:
+                    if[snake[0][0]-1, snake[0][1]] not in snake:
                         return "down"
                 else:
                     return "up"

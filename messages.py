@@ -1,16 +1,9 @@
-import turtle
+import pygame
 
 class messages:
-    def __init__(self):
-        self.messageTurtle = []
-        newturtle = turtle.Turtle()
-        newturtle.up()
-        newturtle.speed(0)
-        newturtle.hideturtle()
-        self.messageTurtle.append(newturtle)
     
-    def draw(self, message, apple_count):
-        self.messageTurtle[0].write(message,align="center",font=("Arial",24,"normal"))
-        self.messageTurtle[0].goto(self.messageTurtle[0].xcor(),self.messageTurtle[0].ycor()-100)
-        self.messageTurtle[0].write(apple_count,align="center",font=("Arial",24,"normal"))
-        self.messageTurtle[0].goto(self.messageTurtle[0].xcor(), self.messageTurtle[0].ycor()+100)
+    def draw(self, message, apple_count, screen, width, height):
+        font = pygame.font.Font(None, 50)
+        text = font.render(message + " Apple Count: " + str(apple_count), True, (255,0,0))
+        screen.blit(text, [width//2-150, height//2])
+        pygame.display.flip()

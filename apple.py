@@ -1,4 +1,3 @@
-import turtle
 import random
 
 class apple:
@@ -6,21 +5,14 @@ class apple:
         # create turtle for apple
         self.xcoord = 0
         self.ycoord = 0
-        newturtle = turtle.Turtle()
-        newturtle.up()
-        newturtle.speed(0)
-        newturtle.shape("apple.gif")
-        self.appleTurtle = newturtle
     
-    def spawnApple(self, allTiles, snake):
+    def spawnApple(self, allTiles, snake, screen):
         x = random.randint(1,allTiles.amountWidth - 1)
         y = random.randint(1,allTiles.amountHeight - 1)
         x,y = self.checkOverlap(x,y, allTiles, snake)
-        self.xcoord = allTiles.returnTiles()[x][y].xcor()
-        self.ycoord = allTiles.returnTiles()[x][y].ycor()
-        self.appleTurtle.goto(allTiles.returnTiles()[x][y].position())
-        self.appleTurtle.showturtle()
-        allTiles.returnTiles()[x][y].hideturtle()
+        self.xcoord = x
+        self.ycoord = y
+        allTiles.changeColour("red",x, y, screen)
     
     # checks if apple generation overlaps with the snake, if it does then regenerate until it doesn't overlap anymore.
     def checkOverlap(self, x,y, allTiles, snake):
