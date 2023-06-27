@@ -46,7 +46,7 @@ class snakegame:
             self.new = 0
 
     def start(self):
-        while game.lost == False and game.run_ml == False:
+        while self.lost == False and self.run_ml == False:
             if self.run_player == True:
                 events = pygame.event.get()
                 for event in events:
@@ -62,7 +62,7 @@ class snakegame:
             self.updateTime()
             pygame.time.delay(self.update_time)
         
-        while game.lost == True:
+        while self.lost == True:
             pygame.draw.rect(self.screen, (170, 170, 170), [self.window_width//2-15, self.height+50, 30, 30])
             events = pygame.event.get()
             for event in events:
@@ -214,10 +214,8 @@ class snakegame:
 
             pygame.display.update()
 
-            time.sleep(2)
-
             self.start()
 
 
-game = snakegame(False)
-game.start()
+#game = snakegame(False)
+#game.start()
