@@ -6,14 +6,13 @@ from tf_agents.specs import array_spec
 from tf_agents.trajectories import time_step as ts
 
 import time
-import math
 
 from snake_game import snakegame
 
 class MachineLearning(py_environment.PyEnvironment):
 
     def __init__(self):
-        self.game = snakegame(True)
+        self.game = snakegame(True, False, False, False)
         self._action_spec = array_spec.BoundedArraySpec(
             shape=(), dtype=np.int32, minimum=0, maximum=2, name='action')
         self._observation_spec = array_spec.BoundedArraySpec(
