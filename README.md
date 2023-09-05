@@ -24,7 +24,7 @@ run_greedy = True
 run_bfs = False
 run_player = False
 ```
-![Greedy GIF](Greedy.GIF)
+![Greedy GIF](./Greedy.GIF)
 
 ### <ins>Greedy 2 (Uses BFS to scan the whole board, and determines the shortest path to the apple.)</ins>
 Run start.py, with:
@@ -33,7 +33,7 @@ run_greedy = False
 run_bfs = True
 run_player = False
 ```
-![BFS GIF](BFS.GIF)
+![BFS GIF](./BFS.GIF)
 
 ## Details on the algorithms:
 
