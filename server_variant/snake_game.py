@@ -22,6 +22,7 @@ class snakegame:
         self.run_ml = False
         self.list_of_directions = []
         self.lost = False
+        self.game_begun = False
 
         # double the size of with turtles.
         self.initTiles = tiles(36, self.width, self.height)
@@ -42,6 +43,7 @@ class snakegame:
             self.new = 0
 
     def start(self):
+        self.game_begun = True
         counter = 0
         while self.lost == False and self.run_ml == False:
             # read user input.
@@ -217,10 +219,11 @@ class snakegame:
             self.initSnake.direction = "none"
             self.run_bfs_repeat = False
             self.lost = False
+            self.game_begun = False
 
             #pygame.display.update()
 
-            self.start()
+            #self.start()
     
     def returnTiles(self):
         return self.initTiles.returnTiles()

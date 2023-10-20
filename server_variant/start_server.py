@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 cors = CORS(app)
 
-game = snakegame(False, False, False, True, 1000)
+game = snakegame(False, False, False, True, 200)
 
 @app.route("/user_input", methods=["POST"])
 def user_input():
@@ -19,15 +19,17 @@ def user_input():
     #   "direction": "up/down/left/right"
     # }
     
+
+    # not really sure why, but the controls are inverted.
     direction = request.json["direction"]
     if direction == "up":
-        game.up()
-    elif direction == "right":
-        game.right()
-    elif direction == "down":
         game.down()
-    elif direction == "left":
+    elif direction == "right":
         game.left()
+    elif direction == "down":
+        game.up()
+    elif direction == "left":
+        game.right()
     else:
         return "Incorrect direction given. ", 400
     
@@ -40,5 +42,7 @@ def get_map():
 
 @app.route("/start_game", methods=["GET"])
 def start_game():
+    if (game.game_begun == True):
+        return "Game in progress. Please wait."
     game.start()
     return "Game successfully started"
