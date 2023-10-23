@@ -33,14 +33,11 @@ class snakegame:
         self.initApple.spawnApple(self.initTiles, self.initSnake)
         #self.initMessage = messages()
 
-        self.new = 1
-
         if ml == True:
             self.run_ml = True
             self.run_player = False
             self.run_algo_bfs = False
             self.run_algo_greedy = False
-            self.new = 0
 
     def start(self):
         self.game_begun = True
@@ -75,9 +72,6 @@ class snakegame:
             self.initSnake.rotate("left")
         elif self.buffer[1] == "none":
             self.buffer[1] = "left"
-        if self.new == 1:
-            self.new = 0
-            self.updateTime()
     
     def down(self):
         if self.initSnake.direction == "up":
@@ -87,9 +81,6 @@ class snakegame:
             self.initSnake.rotate("down")
         elif self.buffer[1] == "none":
             self.buffer[1] = "down"
-        if self.new == 1:
-            self.new = 0
-            self.updateTime()
     
     def right(self):
         if self.initSnake.direction == "left":
@@ -99,9 +90,6 @@ class snakegame:
             self.initSnake.rotate("right")
         elif self.buffer[1] == "none":
             self.buffer[1] = "right"
-        if self.new == 1:
-            self.new = 0
-            self.updateTime()
     
     def up(self):
         if self.initSnake.direction == "down":
@@ -111,9 +99,6 @@ class snakegame:
             self.initSnake.rotate("up")
         elif self.buffer[1] == "none":
             self.buffer[1] = "up"
-        if self.new == 1:
-            self.new = 0
-            self.updateTime()
     
     def runGreedy(self):
         alg = algorithm(self.update_time, self.initTiles)
@@ -142,7 +127,6 @@ class snakegame:
             self.list_of_directions.append(dir_list[1])
 
     def updateTime(self):
-        print("updating time")
         if self.run_algo_greedy == True:
             self.runGreedy()
         if self.run_algo_bfs == True:
@@ -213,7 +197,6 @@ class snakegame:
             self.initSnake.reset(self.initTiles)
             self.initApple.spawnApple(self.initTiles, self.initSnake)
             self.apple_count = 0
-            self.new = 1
             self.buffer = ["none", "none"]
             self.list_of_directions = []
             self.initSnake.direction = "none"
