@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 cors = CORS(app)
 
-game = snakegame(False, False, False, True, 200)
+game = snakegame(False, False, False, True, 300)
 
 @app.route("/user_input", methods=["POST"])
 def user_input():
