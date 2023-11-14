@@ -1,3 +1,5 @@
+import queue
+import copy
 
 class algorithm:
     def __init__(self, update_time, allTiles):
@@ -6,10 +8,7 @@ class algorithm:
         self.screenHeight = allTiles.screenHeight
         self.length = allTiles.length
 
-    # create a greedy algorithm that uses djikstra's algorithm to consider the shortest path to the apple,
-    # rather than choosing a direction that leads the snake to the apple.
-    # returns an array of the movements that the snake should make to go to the apple
-    def shortestpathbfs(self, allTiles, initApple):
+    def djikstra(self, allTiles, initApple):
         apple_x = initApple.xcoord
         apple_y = initApple.ycoord
         # apple_x and apple_y store the coordinates of the apple.
@@ -65,9 +64,17 @@ class algorithm:
                     if i == 3:
                         direction = "left"
                     visited[curr_key[i]] = [visited[str(curr_pos[0]) + "," + str(curr_pos[1])][0] + 1, visited[str(curr_pos[0]) + "," + str(curr_pos[1])][1] + "," + direction]
+        return visited[str(int(apple_x)) + "," + str(int(apple_y))], visited
+
+    # create a greedy algorithm that uses djikstra's algorithm to consider the shortest path to the apple,
+    # rather than choosing a direction that leads the snake to the apple.
+    # returns an array of the movements that the snake should make to go to the apple
+    def shortestpathbfs(self, allTiles, initApple):
         
+        result, visited = self.djikstra(allTiles, initApple)
+
         #if there is no path to apple, then tell the snake to stall, and scan again to see if there is a path to the apple.
-        if visited[str(int(apple_x)) + "," + str(int(apple_y))][0] == float('inf'):
+        if result == float('inf'):
             largest = [0,""]
             for key in visited:
                 if visited[key][0] != float('inf'):
@@ -75,7 +82,7 @@ class algorithm:
                         largest = visited[key]
             return largest, True
         else:
-            return visited[str(int(apple_x)) + "," + str(int(apple_y))], False
+            return result, False
             
 
         # given all outgoing edges, add them to a queue if the destination doesn't have value of inf.
@@ -155,3 +162,175 @@ class algorithm:
                 else:
                     return "up"
             return "none"
+
+    def shortestandlongestpath(self, allTiles, initApple):
+
+        result, visited = self.djikstra(allTiles, initApple)
+
+        #print(result)
+
+        result[0] = float('inf')
+
+        #if there is no path to apple, take the longest possible path.
+        if result[0] == float('inf'):
+            # to find the longest path, do a bfs search. The last bfs search to complete is the longest path possible.
+            
+            snakepos = [-1, -1]
+
+            # get snake position.
+            tiles = copy.deepcopy(allTiles.returnTiles())
+            for i in range(len(tiles)):
+                for j in range(len(tiles[i])):
+                    tile = tiles[i][j]
+                    if tile == "lightblue":
+                        snakepos[0] = i
+                        snakepos[1] = j
+                        tiles[i][j] = "invalid"
+                    elif tile == "blue":
+                        tiles[i][j] = "invalid"
+                    else:
+                        tiles[i][j] = "valid"
+
+            path = []
+
+            state = None
+            bfs_q = queue.Queue()
+            bfs_q.put([snakepos, path, tiles])
+
+            loops = 0
+
+            while not bfs_q.empty():
+                #print(loops)
+                loops+=1
+
+                state = bfs_q.get()
+                snake = state[0]
+                curr_path = state[1]
+                curr_tiles = state[2]
+
+                # print("newloop")
+                # for vert_tile in tiles:
+                #     print(vert_tile)
+                # print([state[0],state[1]])
+
+                # print(snake)
+
+                if ((tiles[snake[0]][snake[1]].isdigit() and (len(curr_path) + 1 > int(tiles[snake[0]][snake[1]]))) or (tiles[snake[0]][snake[1]] == "valid")) and (curr_tiles[snake[0]][snake[1]] != "invalid"):
+                    tiles[snake[0]][snake[1]] = str(len(curr_path) + 1)
+
+                tmp_tiles = copy.deepcopy(curr_tiles)
+                tmp_tiles[snake[0]][snake[1]] = "invalid"
+
+                # print("tmp tiles = ")
+                # for vert_tile in tmp_tiles:
+                #     print(vert_tile)
+                # print([state[0],state[1]])
+
+                # try to move up
+
+                if (snake[0] != 0) and (tiles[snake[0]-1][snake[1]] != "invalid") and (curr_tiles[snake[0]-1][snake[1]] != "invalid"):
+                    valid = False
+                    
+                    if (tiles[snake[0]-1][snake[1]]).isdigit():
+                        if (len(curr_path) + 1 > int(tiles[snake[0]-1][snake[1]])):
+                            valid = True
+                    else:
+                        valid = True
+
+                    if valid:
+                        #print("trying to move up")
+
+                        tmp_snakepos = copy.deepcopy(snake)
+                        tmp_snakepos[0] -= 1
+                        tmp_path = copy.deepcopy(curr_path)
+                        tmp_path.append("down")
+
+                        temp_tiles = copy.deepcopy(tmp_tiles)
+                        
+
+                        bfs_q.put([tmp_snakepos, tmp_path, temp_tiles])
+                    
+
+                # try to move right
+                if (snake[1]+1 < len(tiles[0])) and (tiles[snake[0]][snake[1]+1] != "invalid") and (curr_tiles[snake[0]][snake[1]+1] != "invalid"):
+                    valid = False
+
+                    if (tiles[snake[0]][snake[1]+1]).isdigit():
+                        if (len(curr_path) + 1 > int(tiles[snake[0]][snake[1]+1])):
+                            valid = True
+                    else:
+                        valid = True
+
+                    if valid:
+                        #print("trying to move right")
+
+                        tmp_snakepos = copy.deepcopy(snake)
+                        tmp_snakepos[1] += 1
+                        tmp_path = copy.deepcopy(curr_path)
+                        tmp_path.append("left")
+
+                        temp_tiles = copy.deepcopy(tmp_tiles)
+                        
+
+                        bfs_q.put([tmp_snakepos, tmp_path, temp_tiles])
+                
+                # try to move down
+                if (snake[0]+1 < len(tiles)) and (tiles[snake[0]+1][snake[1]] != "invalid") and (curr_tiles[snake[0]+1][snake[1]] != "invalid"):
+                    valid = False
+                    
+                    if (tiles[snake[0]+1][snake[1]]).isdigit():
+                        if (len(curr_path) + 1 > int(tiles[snake[0]+1][snake[1]])):
+                            valid = True
+                    else:
+                        valid = True
+
+                    if valid:
+                        #print("trying to move down")
+
+                        tmp_snakepos = copy.deepcopy(snake)
+                        tmp_snakepos[0] += 1
+                        tmp_path = copy.deepcopy(curr_path)
+                        tmp_path.append("up")
+
+                        temp_tiles = copy.deepcopy(tmp_tiles)
+                        
+
+                        bfs_q.put([tmp_snakepos, tmp_path, temp_tiles])
+
+                # try to move left
+                if (snake[1] != 0) and (tiles[snake[0]][snake[1]-1] != "invalid") and (curr_tiles[snake[0]][snake[1]-1] != "invalid"):
+                    valid = False
+
+                    # print(tiles[snake[0]][snake[1]-1].isdigit())
+                    # print(tiles[snake[0]][snake[1]-1])
+                    if (tiles[snake[0]][snake[1]-1]).isdigit():
+                        if (len(curr_path) + 1 > int(tiles[snake[0]][snake[1]-1])):
+                            valid = True
+                    else:
+                        valid = True
+                    
+                    if valid:
+                        #print("trying to move left")
+
+                        tmp_snakepos = copy.deepcopy(snake)
+                        tmp_snakepos[1] -= 1
+                        tmp_path = copy.deepcopy(curr_path)
+                        tmp_path.append("right")
+
+                        temp_tiles = copy.deepcopy(tmp_tiles)
+                        
+
+                        bfs_q.put([tmp_snakepos, tmp_path, temp_tiles])
+            
+            longest_path = state[1]
+            
+            # print("longest_path")
+            # print(longest_path)
+
+            path_string = ","
+            for direction in longest_path:
+                path_string += direction + ","
+
+            return [1, path_string]
+        else:
+            return result

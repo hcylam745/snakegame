@@ -19,6 +19,7 @@ class snakegame:
         self.run_algo_greedy = greedy
         self.run_algo_bfs = bfs
         self.run_bfs_repeat = False
+        self.run_algo_shortestlongest = True
         self.run_player = player
         self.run_ml = False
         self.list_of_directions = []
@@ -147,12 +148,23 @@ class snakegame:
 
         if len(dir_list) >= 2:
             self.list_of_directions.append(dir_list[1])
+    
+    def runShortestLongest(self):
+        alg = algorithm(self.update_time, self.initTiles)
+        directions = alg.shortestandlongestpath(self.initTiles, self.initApple)
+
+        dir_list = directions[1].split(",")
+
+        if len(dir_list) >= 2:
+            self.list_of_directions.append(dir_list[1])
 
     def updateTime(self):
         if self.run_algo_greedy == True:
             self.runGreedy()
         if self.run_algo_bfs == True:
             self.runGreedyBFS()
+        if self.run_algo_shortestlongest == True:
+            self.runShortestLongest()
         
         if len(self.list_of_directions) > 0:
             curr_dir = self.list_of_directions[0]
