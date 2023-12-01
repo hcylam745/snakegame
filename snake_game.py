@@ -151,7 +151,7 @@ class snakegame:
     
     def runShortestLongest(self):
         alg = algorithm(self.update_time, self.initTiles)
-        directions = alg.shortestandlongestpath(self.initTiles, self.initApple)
+        directions = alg.shortestandlongestpathefficient(self.initTiles, self.initApple, self.initSnake)
 
         dir_list = directions[1].split(",")
 

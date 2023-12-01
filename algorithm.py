@@ -163,13 +163,145 @@ class algorithm:
                     return "up"
             return "none"
 
+    def shortestandlongestpathefficient(self, allTiles, initApple, initSnake):
+        result, visited = self.djikstra(allTiles, initApple)
+
+        #print(result)
+        #result[0] = float('inf')
+
+        if result[0] == float('inf'):
+            snakepos = [-1, -1]
+            farthestpos = [-1, -1]
+
+            tiles = allTiles.returnTiles()
+
+            for i in range(len(tiles)):
+                for j in range(len(tiles[i])):
+                    tile = tiles[i][j]
+                    if tile == "lightblue":
+                        snakepos[0] = i
+                        snakepos[1] = j
+            
+            #compute farthestpos
+            visited_nodes = [snakepos]
+
+            positions_q = queue.Queue()
+            positions_q.put(snakepos)
+
+            #print(positions_q.empty())
+            
+            while not positions_q.empty():
+                curr_pos = positions_q.get()
+                #print(curr_pos)
+                # check bounds
+                if (curr_pos[0] < 0) or (curr_pos[0] >= len(tiles)):
+                    continue
+                # check bounds
+                if (curr_pos[1] < 0) or (curr_pos[1] >= len(tiles[curr_pos[0]])):
+                    continue
+                
+                #print(curr_pos)
+                # check if we are on the snake tile.
+                if (tiles[curr_pos[0]][curr_pos[1]] == "blue"):
+                    continue
+
+                farthestpos = curr_pos
+
+                new_coords = curr_pos
+                new_coords[0] -= 1
+                #print(new_coords)
+                if new_coords not in visited_nodes:
+                    positions_q.put(new_coords)
+                    visited_nodes.append(positions_q)
+                
+                new_coords[0] += 2
+                #print(new_coords)
+                if new_coords not in visited_nodes:
+                    positions_q.put(new_coords)
+                    visited_nodes.append(positions_q)
+                
+                new_coords[0] -= 1
+                new_coords[1] -= 1
+                #print(new_coords)
+                if new_coords not in visited_nodes:
+                    positions_q.put(new_coords)
+                    visited_nodes.append(positions_q)
+                
+                new_coords[1] += 2
+                #print(new_coords)
+                if new_coords not in visited_nodes:
+                    positions_q.put(new_coords)
+                    visited_nodes.append(positions_q)
+
+            #print(farthestpos)
+
+            direction = None
+
+            #print(snakepos[0])
+            #print(len(tiles))
+
+            if snakepos[0] > farthestpos[0] and snakepos[0] < len(tiles)-1:
+                # try to move up
+                if tiles[snakepos[0]+1][snakepos[1]] == "green" or tiles[snakepos[0]+1][snakepos[1]] == "lime":
+                    if initSnake.direction != "down":
+                        direction = "up"
+            elif snakepos[0] < farthestpos[0] and snakepos[0] > 0:
+                # try to move down
+                if tiles[snakepos[0]-1][snakepos[1]] == "green" or tiles[snakepos[0]+1][snakepos[1]] == "lime":
+                    if initSnake.direction != "up":
+                        direction = "down"
+            
+            #print(direction)
+
+            #print(snakepos[1])
+            #print(len(tiles[0])-1)
+
+            if direction == None:
+                if snakepos[1] > farthestpos[1] and snakepos[1] < len(tiles[0])-1:
+                    # try to move left
+                    if tiles[snakepos[0]][snakepos[1]+1] == "green" or tiles[snakepos[0]][snakepos[1]+1] == "lime":
+                        if initSnake.direction != "right":
+                            direction = "left"
+                elif snakepos[1] < farthestpos[1] and snakepos[1] > 0:
+                    #try to move right
+                    if tiles[snakepos[0]][snakepos[1]-1] == "green" or tiles[snakepos[0]][snakepos[1]-1] == "lime":
+                        if initSnake.direction != "left":
+                            direction = "right"
+
+            #print(direction)
+            #print(initSnake.direction)
+
+            if direction == None:
+                # take any direction that is valid. there is no way to stay away from the target.
+                
+                #print(snakepos)
+                #print(tiles[snakepos[0]-1][snakepos[1]])
+                if snakepos[0] > 0 and (tiles[snakepos[0]-1][snakepos[1]] == "green" or tiles[snakepos[0]-1][snakepos[1]] == "lime") and initSnake.direction != "up":
+                    direction = "down"
+                elif snakepos[0] < len(tiles)-1 and (tiles[snakepos[0]+1][snakepos[1]] == "green" or tiles[snakepos[0]+1][snakepos[1]] == "lime") and initSnake.direction != "down":
+                    direction = "up"
+                elif snakepos[1] > 0 and (tiles[snakepos[0]][snakepos[1]-1] == "green" or tiles[snakepos[0]][snakepos[1]-1] == "lime") and initSnake.direction != "left":
+                    direction = "right"
+                elif snakepos[1] < len(tiles[0])-1 and (tiles[snakepos[0]][snakepos[1]+1] == "green" or tiles[snakepos[0]][snakepos[1]+1] == "lime") and initSnake.direction != "right":
+                    direction = "left"
+                else:
+                    #print("failsafe")
+                    direction = "up"
+
+            #print("farthest. returning")
+            #print([1, ","+direction])
+
+            return [1, ","+direction]
+        else:
+            return result
+
     def shortestandlongestpath(self, allTiles, initApple):
 
         result, visited = self.djikstra(allTiles, initApple)
 
         #print(result)
 
-        result[0] = float('inf')
+        #result[0] = float('inf')
 
         #if there is no path to apple, take the longest possible path.
         if result[0] == float('inf'):
