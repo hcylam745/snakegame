@@ -183,7 +183,8 @@ class algorithm:
                         snakepos[1] = j
             
             #compute farthestpos
-            visited_nodes = [snakepos]
+            temp = copy.deepcopy(snakepos)
+            visited_nodes = [temp]
 
             positions_q = queue.Queue()
             positions_q.put(snakepos)
@@ -193,6 +194,8 @@ class algorithm:
             while not positions_q.empty():
                 curr_pos = positions_q.get()
                 #print(curr_pos)
+                #print("visited nodes")
+                #print(visited_nodes)
                 # check bounds
                 if (curr_pos[0] < 0) or (curr_pos[0] >= len(tiles)):
                     continue
@@ -207,32 +210,47 @@ class algorithm:
 
                 farthestpos = curr_pos
 
-                new_coords = curr_pos
+                new_coords = copy.deepcopy(curr_pos)
                 new_coords[0] -= 1
                 #print(new_coords)
-                if new_coords not in visited_nodes:
+                #print(visited_nodes)
+                #print("not new coords")
+                #print(new_coords in visited_nodes)
+                if not new_coords in visited_nodes:
                     positions_q.put(new_coords)
-                    visited_nodes.append(positions_q)
+                    visited_nodes.append(new_coords)
                 
+                temp = copy.deepcopy(new_coords)
+                new_coords = temp
+
                 new_coords[0] += 2
                 #print(new_coords)
-                if new_coords not in visited_nodes:
+                if not new_coords in visited_nodes:
                     positions_q.put(new_coords)
-                    visited_nodes.append(positions_q)
+                    visited_nodes.append(new_coords)
                 
+                temp = copy.deepcopy(new_coords)
+                new_coords = temp
+
                 new_coords[0] -= 1
                 new_coords[1] -= 1
                 #print(new_coords)
-                if new_coords not in visited_nodes:
+                if not new_coords in visited_nodes:
                     positions_q.put(new_coords)
-                    visited_nodes.append(positions_q)
+                    visited_nodes.append(new_coords)
                 
+                temp = copy.deepcopy(new_coords)
+                new_coords = temp
+
                 new_coords[1] += 2
                 #print(new_coords)
-                if new_coords not in visited_nodes:
+                if not new_coords in visited_nodes:
                     positions_q.put(new_coords)
-                    visited_nodes.append(positions_q)
+                    visited_nodes.append(new_coords)
+                
+                #print(positions_q.empty())
 
+            #print("farthestpos")
             #print(farthestpos)
 
             direction = None
@@ -275,6 +293,7 @@ class algorithm:
                 # take any direction that is valid. there is no way to stay away from the target.
                 
                 #print(snakepos)
+                #print(initSnake.direction)
                 #print(tiles[snakepos[0]-1][snakepos[1]])
                 if snakepos[0] > 0 and (tiles[snakepos[0]-1][snakepos[1]] == "green" or tiles[snakepos[0]-1][snakepos[1]] == "lime") and initSnake.direction != "up":
                     direction = "down"
