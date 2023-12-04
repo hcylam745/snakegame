@@ -8,7 +8,7 @@ from tiles import tiles
 from algorithm import algorithm
 
 class snakegame:
-    def __init__(self, ml, greedy, bfs, player):
+    def __init__(self, ml, greedy, bfs, player, bfs_longest):
         self.update_time = 150
         self.width = 550
         self.height = 550
@@ -19,7 +19,7 @@ class snakegame:
         self.run_algo_greedy = greedy
         self.run_algo_bfs = bfs
         self.run_bfs_repeat = False
-        self.run_algo_shortestlongest = True
+        self.run_algo_shortestlongest = bfs_longest
         self.run_player = player
         self.run_ml = False
         self.list_of_directions = []
@@ -203,6 +203,8 @@ class snakegame:
             self.initSnake.rotate(self.buffer[1])
         self.buffer[0] = "none"
         self.buffer[1] = "none"
+
+        pygame.event.pump()
 
         pygame.display.update()
     
