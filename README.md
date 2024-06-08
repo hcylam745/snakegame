@@ -8,7 +8,7 @@ Run start.py, with:
 run_greedy = False
 run_bfs = False
 run_player = True
-run_bfse_longest = False
+run_bfs_longest = False
 ```
 
 Play using the arrow keys.
